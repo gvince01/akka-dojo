@@ -1,12 +1,11 @@
 package ex1
 
-import akka.{ Done, NotUsed }
 import akka.actor.ActorSystem
 import akka.stream.alpakka.file.scaladsl.FileTailSource
-import akka.stream.scaladsl.{ Keep, RunnableGraph, Sink, Source }
-import ex1.Ex1Main.lines.runWith
+import akka.stream.scaladsl.{ Sink, Source }
+import akka.{ Done, NotUsed }
 
-import java.nio.file.{ FileSystem, FileSystems, Paths }
+import java.nio.file.Paths
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
@@ -24,10 +23,14 @@ object Ex1Main extends App {
     pollingInterval = 250.millis
   )
 
-  // Create a function that transforms the string
   val sink: Sink[String, Future[Done]] = Sink.foreach[String] { input =>
-    // do something here
+    println(myTransformationFunction(input))
   }
+
+
+  // Create a function that transforms the string
+  def myTransformationFunction(input: String): String = ???
+
 
   // lines.runWith is the same as saying
   // lines.toMat(sink)(Keep.right).run()
