@@ -76,6 +76,11 @@ data elements flowing through it.
 // Accepts an Int and returns an Int
 Flow[Int].map(_ * 2)
 ```
+                 
+### Materializer
+
+We can use one if we want our Flow to have some side effects like logging or saving results.
+Most commonly, we will be passing the NotUsed alias as a Materializer to denote that our Flow should not have any side effects.
 
 ## RunnableGraph
                     
