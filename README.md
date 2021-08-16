@@ -214,10 +214,25 @@ probe.expectMsg(3.seconds, "completed")
 The testkit module comes with two main components that are `TestSource` and `TestSink` which provide sources and sinks that materialize to 
 probes. 
 
-For example, 
+For example, we can use the `TestSink` in the following example:
 
 ```scala
 val sourceUnderTest = Source(1 to 4).filter(_ % 2 == 0).map(_ * 2)
 
 sourceUnderTest.runWith(TestSink[Int]()).request(2).expectNext(4, 8).expectComplete()
 ```
+                                                                
+Similarly, we can use the `TestSource`,
+
+```scala
+val sinkUnderTest = Sink.head[Int]
+
+val (probe, future) = TestSource.probe[Int].toMat(sinkUnderTest)(Keep.both).run()
+probe.sendError(new Exception("failure"))
+
+assert(future.failed.futureValue.getMessage == "failure")
+```
+        
+
+## Putting it all together
+
