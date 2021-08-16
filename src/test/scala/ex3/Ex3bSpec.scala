@@ -15,6 +15,8 @@ class Ex3bSpec extends AnyFlatSpec {
   it should "correctly generate a tick" in {
 
     case object Tick
+    // the Source.tick allows us to periodically emit elements from the
+    // source
     val sourceUnderTest = Source.tick(0.seconds, 200.millis, Tick)
 
     val probe = TestProbe()
@@ -25,6 +27,7 @@ class Ex3bSpec extends AnyFlatSpec {
     probe.expectMsg(1.second, Tick)
     probe.expectNoMessage(100.millis)
     probe.expectMsg(3.seconds, Tick)
+    // stop out source from producing elements
     cancellable.cancel()
     probe.expectMsg(3.seconds, "completed")
   }

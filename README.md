@@ -188,7 +188,6 @@ probe.expectMsg(3.seconds, Seq(Seq(1, 2), Seq(3, 4)))
 
 ```
 
-
 If we now compare the previous example with the one in `Ex3bSpec`, we can see that we don't materialize our stream into a future.
 We instead send our incoming elements to a given ActorRef. This allows us to use the assertion methods on the messages one by one as they arrive (as opposed to the previous example 
 whereby we created an assertion one the final result).
@@ -207,5 +206,18 @@ probe.expectNoMessage(100.millis)
 probe.expectMsg(3.seconds, Tick)
 cancellable.cancel()
 probe.expectMsg(3.seconds, "completed")
+```
 
+### Streams Testkit
+
+
+The testkit module comes with two main components that are `TestSource` and `TestSink` which provide sources and sinks that materialize to 
+probes. 
+
+For example, 
+
+```scala
+val sourceUnderTest = Source(1 to 4).filter(_ % 2 == 0).map(_ * 2)
+
+sourceUnderTest.runWith(TestSink[Int]()).request(2).expectNext(4, 8).expectComplete()
 ```
