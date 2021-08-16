@@ -105,7 +105,7 @@ sink. We are also using the `Keep.right` to say that we are only interested in t
 
 ### Give it a go!
                         
-See Ex1 for a more real world example of using a Source, Sink and Flow! Write a function to modify the input somehow and 
+See `Ex1` for a more real world example of using a Source, Sink and Flow! Write a function to modify the input somehow and 
 print the result to the console. What happens if you update the file and save it while your code is running?
                    
 
@@ -172,3 +172,40 @@ source.runForeach(println)
 
 Try running the code using the different buffer types to get an understanding of what's going on.
 
+
+## Testing
+
+Similar to the akka-testkit, the `akka-streams-testkit` provides us with a `TestProbe`. For example, in `Ex3aSpec` we
+are materilizing out Stream into a `Future` (see scala doc for `Sink.seq` for more information) and then using a pipe
+to pass the result into our test probe,
+
+```scala
+val sourceUnderTest = Source(1 to 4).grouped(2)
+
+val probe = TestProbe()
+sourceUnderTest.runWith(Sink.seq).pipeTo(probe.ref)
+probe.expectMsg(3.seconds, Seq(Seq(1, 2), Seq(3, 4)))
+
+```
+
+
+If we now compare the previous example with the one in `Ex3bSpec`, we can see that we don't materialize our stream into a future.
+We instead send our incoming elements to a given ActorRef. This allows us to use the assertion methods on the messages one by one as they arrive (as opposed to the previous example 
+whereby we created an assertion one the final result).
+
+```scala
+case object Tick
+val sourceUnderTest = Source.tick(0.seconds, 200.millis, Tick)
+
+val probe = TestProbe()
+val cancellable = sourceUnderTest
+        .to(Sink.actorRef(probe.ref, onCompleteMessage = "completed", onFailureMessage = _ => "failed"))
+        .run()
+
+probe.expectMsg(1.second, Tick)
+probe.expectNoMessage(100.millis)
+probe.expectMsg(3.seconds, Tick)
+cancellable.cancel()
+probe.expectMsg(3.seconds, "completed")
+
+```
