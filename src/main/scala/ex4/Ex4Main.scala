@@ -1,6 +1,6 @@
 package ex4
 
-import akka.{ Done, NotUsed }
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.IOResult
 import akka.stream.alpakka.csv.scaladsl.{ CsvFormatting, CsvParsing }
@@ -11,11 +11,20 @@ import java.nio.file.{ Path, Paths }
 import scala.collection.immutable
 import scala.concurrent.Future
 
+
 object Ex4Main extends App with CsvProcessor {
 
   // Create an actor system which we can use to execute our code
   implicit val system: ActorSystem = ActorSystem()
-  val inputPath: Path = Paths.get("src/main/resources/ex4/country-list.csv")
+  val inputPath: Path = Paths.get("src/main/resources/ex4/country-list-corrupted.csv")
+  val outputPath: Path = Paths.get("src/main/resources/ex4/country-list-fixed.csv")
+
+      // use this code block to get your stream to terminate
+//    .run
+//    .andThen {
+//      case _ =>
+//        system.terminate()
+//    }
 
 }
 
@@ -27,6 +36,8 @@ trait CsvProcessor {
   val inputCSVParser: Flow[ByteString, List[ByteString], NotUsed] = CsvParsing.lineScanner()
 
   val outputCSVFormatter: Flow[immutable.Iterable[String], ByteString, NotUsed] = CsvFormatting.format()
+
+  val flow: Flow[List[String], List[String], NotUsed] = ???
 
   def inputFileSource(inputPath: Path): Source[ByteString, Future[IOResult]] = {
     FileIO.fromPath(inputPath)
