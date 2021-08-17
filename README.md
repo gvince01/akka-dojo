@@ -172,10 +172,58 @@ source.runForeach(println)
 
 Try running the code using the different buffer types to get an understanding of what's going on.
 
+     
+## Flows
+
+As mentioned previously, a flow is an operator with exactly one input and one output. The flow type signature is as follows:
+
+```scala
+Flow[-In, +Out, +Mat]
+```
+We therefore can define a flow as:
+
+```scala
+val flow1: Flow[Int, String, NotUsed] = Flow[Int].map { input: Int =>
+  input.toString
+}
+```
+
+We can use `.via` to connect multiple flows together. For example,
+
+```scala
+val flow2: Flow[String, Seq[Char], NotUsed] = Flow[String].map { input =>
+  input.toSeq
+}
+
+flow1.via(flow2)
+```
+
+In order to run our flow we need a Source and a Sink. For example, (see `Ex4Main` for the code)
+
+```scala
+val source = Source(1 to 100)
+
+val flow1 = Flow[Int].map { input =>
+  input.toString
+}
+
+val flow2 = Flow[String].map { input =>
+  input.toSeq
+}
+
+val sink = Sink.foreach[Seq[Char]] {
+  charSeq => println(charSeq.mkString("-"))
+}
+
+source
+  .via(flow1)
+  .via(flow2)
+  .runWith(sink)
+```
 
 ## Testing
 
-Similar to the akka-testkit, the `akka-streams-testkit` provides us with a `TestProbe`. For example, in `Ex3aSpec` we
+Similar to the akka-testkit, the `akka-streams-testkit` provides us with a `TestProbe`. For example, in `Ex4aSpec` we
 are materilizing out Stream into a `Future` (see scala doc for `Sink.seq` for more information) and then using a pipe
 to pass the result into our test probe,
 
@@ -188,7 +236,7 @@ probe.expectMsg(3.seconds, Seq(Seq(1, 2), Seq(3, 4)))
 
 ```
 
-If we now compare the previous example with the one in `Ex3bSpec`, we can see that we don't materialize our stream into a future.
+If we now compare the previous example with the one in `Ex4bSpec`, we can see that we don't materialize our stream into a future.
 We instead send our incoming elements to a given ActorRef. This allows us to use the assertion methods on the messages one by one as they arrive (as opposed to the previous example 
 whereby we created an assertion one the final result).
 
@@ -209,7 +257,6 @@ probe.expectMsg(3.seconds, "completed")
 ```
 
 ### Streams Testkit
-
 
 The testkit module comes with two main components that are `TestSource` and `TestSink` which provide sources and sinks that materialize to 
 probes. 
@@ -253,10 +300,9 @@ has become:
 "Kuwait","Kuwait City","unknown"
 ```
 
-
 Unfortunately it's not known if the computer available has sufficient memory to load in the whole dataset in one go. 
 
 Your boss asks you to solve the problem.
 
 Task: Use your knowledge of Akka Streams to process the file, removing any unwanted data and then writing out the result into a CSV file. 
-`Ex4Main` contains some code to help you on your way.
+`Ex5Main` contains some code to help you on your way.

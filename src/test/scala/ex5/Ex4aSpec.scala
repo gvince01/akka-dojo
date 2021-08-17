@@ -1,4 +1,4 @@
-package ex3
+package ex5
 
 import akka.actor.ActorSystem
 import akka.pattern.pipe
@@ -9,7 +9,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.DurationInt
 
-class Ex3aSpec extends AnyFlatSpec {
+class Ex4aSpec extends AnyFlatSpec {
 
   // Create an actor system which we can use to execute our code
   implicit val system: ActorSystem = ActorSystem()
