@@ -236,3 +236,27 @@ assert(future.failed.futureValue.getMessage == "failure")
 
 ## Putting it all together
 
+Problem: You work for a company that provides the definitive and up-to-date information regarding the capital cities of the world.
+Due to an unforeseen error the dataset has been corrupted. Each line in the dataset has been rewritten multiple times but with some 
+data missing. For example,
+
+```
+"Kuwait","Kuwait City","countryCapital"
+```
+
+has become:
+
+```
+"Kuwait","Kuwait City","countryCapital"
+"unknown","Kuwait City","countryCapital"
+"Kuwait","unknown","countryCapital"
+"Kuwait","Kuwait City","unknown"
+```
+
+
+Unfortunately it's not known if the computer available has sufficient memory to load in the whole dataset in one go. 
+
+Your boss asks you to solve the problem.
+
+Task: Use your knowledge of Akka Streams to process the file, removing any unwanted data and then writing out the result into a CSV file. 
+`Ex4Main` contains some code to help you on your way.
