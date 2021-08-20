@@ -19,8 +19,8 @@ object Ex2bMain extends App {
   // We can define an overflow strategy to decide how to deal with a full buffer
   val source = Source(1 to 100)
     .map { x => println(s"Passing $x") ; x}
-    .buffer(5, OverflowStrategy.dropHead)
-//    .buffer(5, OverflowStrategy.dropTail)
+//    .buffer(5, OverflowStrategy.dropHead)
+    .buffer(5, OverflowStrategy.dropTail)
 //    .buffer(5, OverflowStrategy.dropBuffer)
 //    .buffer(5, OverflowStrategy.dropNew)
 //    .buffer(5, OverflowStrategy.backpressure)

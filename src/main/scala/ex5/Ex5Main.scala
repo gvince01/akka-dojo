@@ -19,7 +19,30 @@ object Ex5Main extends App with CsvProcessor {
   val inputPath: Path = Paths.get("src/main/resources/ex5/country-list-corrupted.csv")
   val outputPath: Path = Paths.get("src/main/resources/ex5/country-list-fixed.csv")
 
-      // use this code block to get your stream to terminate
+  inputFileSource(inputPath)
+    .via(inputCSVParser)
+    .via(byteStringToStringFlow)
+    .filterNot(x => x.contains("unknown"))
+    .via(outputCSVFormatter)
+    .to(outputFileWriter(outputPath))
+    .run
+    .andThen {
+      case _ =>
+        system.terminate()
+    }
+
+//  inputFileSource(inputPath)
+//    .via(inputCSVParser)
+//    .map(_.map(_.utf8String).filterNot(x => x.contains("unknown")))
+//    .via(outputCSVFormatter)
+//    .to(outputFileWriter(outputPath))
+//    .run
+//    .andThen {
+//      case _ =>
+//        system.terminate()
+//    }
+
+  // use this code block to get your stream to terminate
 //    .run
 //    .andThen {
 //      case _ =>
@@ -29,6 +52,10 @@ object Ex5Main extends App with CsvProcessor {
 }
 
 trait CsvProcessor {
+
+  val byteStringToStringFlow: Flow[List[ByteString], List[String], NotUsed] = Flow[List[ByteString]].map { byteString =>
+    byteString.map(_.utf8String)
+  }
 
   // each row of the input CSV file will become a List[ByteString]
   // we need to convert the List[ByteString] into a List[String]

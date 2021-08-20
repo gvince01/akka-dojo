@@ -29,7 +29,7 @@ object Ex1Main extends App {
 
 
   // Create a function that transforms the string
-  def myTransformationFunction(input: String): String = ???
+  def myTransformationFunction(input: String): String = input.capitalize
 
 
   // lines.runWith is the same as saying
