@@ -80,7 +80,7 @@ Flow[Int].map(_ * 2)
 ### Materializer
 
 We can use one if we want our Flow to have some side effects like logging or saving results.
-Most commonly, we will be passing the NotUsed alias as a Materializer to denote that our Flow should not have any side effects.
+Most commonly, we will be passing the `NotUsed` alias as a Materializer to denote that our Flow should not have any side effects.
 
 ## RunnableGraph
                     
@@ -111,7 +111,7 @@ print the result to the console. What happens if you update the file and save it
 
 ## Backpressure 
 
-Akka streams provides us with the ability to two asynchronous non-blocking back-pressured code. A user doesn't have to 
+Akka streams provides us with the ability to write asynchronous non-blocking back-pressured code. A user doesn't have to 
 explicitly write back-pressure handling code -- it is build in and dealt with automatically. 
 
 To highlight backpressure, lets have a look at the examples in the ex2 package.
@@ -180,7 +180,9 @@ As mentioned previously, a flow is an operator with exactly one input and one ou
 ```scala
 Flow[-In, +Out, +Mat]
 ```
-We therefore can define a flow as:
+                                 
+Therefore, if we want a Flow that accepts an input of an `Int` and outputs a `String` we can 
+define it as follows:
 
 ```scala
 val flow1: Flow[Int, String, NotUsed] = Flow[Int].map { input: Int =>
@@ -188,7 +190,8 @@ val flow1: Flow[Int, String, NotUsed] = Flow[Int].map { input: Int =>
 }
 ```
 
-We can use `.via` to connect multiple flows together. For example,
+We can use `.via` to connect multiple flows together. For example, lets say we want to connect our flow from
+the previous example to another flow that accepts a `String` and outputs a `Seq[Char]`:
 
 ```scala
 val flow2: Flow[String, Seq[Char], NotUsed] = Flow[String].map { input =>
@@ -221,10 +224,12 @@ source
   .runWith(sink)
 ```
 
+These examples can be found under `Ex3Main`.
+
 ## Testing
 
-Similar to the akka-testkit, the `akka-streams-testkit` provides us with a `TestProbe`. For example, in `Ex4aSpec` we
-are materilizing out Stream into a `Future` (see scala doc for `Sink.seq` for more information) and then using a pipe
+Similar to the `akka-testkit`, the `akka-streams-testkit` provides us with a `TestProbe`. For example, in `Ex4aSpec` we
+are materializing out Stream into a `Future` (see scala doc for `Sink.seq` for more information) and then using a pipe
 to pass the result into our test probe,
 
 ```scala

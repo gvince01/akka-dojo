@@ -1,9 +1,9 @@
-package ex4
+package ex3
 
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.{ Flow, Sink, Source }
 
-object Ex4Main extends App {
+object Ex3Main extends App {
 
   // Create an actor system which we can use to execute our code
   implicit val system: ActorSystem = ActorSystem()
